@@ -25,10 +25,10 @@ Let's Go!
 docker run -d -t -P --name spark_master ekito/sparkassandra /start-master.sh
 
 # run a Cassandra + Spark worker node
-docker run -it --name some-cassandra --link spark_master:spark_master -d ekito/sparkassandra
+docker run -it --name worker1 --link spark_master:spark_master -d ekito/sparkassandra
 
 # (optional) run some other nodes if you wish
-docker run -it --link spark_master:spark_master --link some-cassandra:cassandra -d ekito/sparkassandra
+docker run -it --name worker2 --link spark_master:spark_master --link worker1:cassandra -d ekito/sparkassandra
 ```
 
 Here you have a Cassandra + Spark cluster running without installing anything but Docker. #cool
@@ -39,7 +39,7 @@ To test your Cassandra cluster, you can run a cqlsh console to insert some data:
 
 ```
 # run a Cassandra cqlsh console
-docker run -it --link some-cassandra:cassandra --rm ekito/sparkassandra cqlsh cassandra
+docker run -it --link worker1:cassandra --rm ekito/sparkassandra cqlsh cassandra
 
 # create some data and retrieve them:
 cqlsh>CREATE KEYSPACE test WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1 };
@@ -66,7 +66,7 @@ To test your Spark cluster, you can run a shell to read/write data from/to Cassa
 
 ```
 # run a Spark shell
-docker run -i -t -P --link spark_master:spark_master --link some-cassandra:cassandra ekito/sparkassandra /spark-shell.sh
+docker run -i -t -P --link spark_master:spark_master --link worker1:cassandra ekito/sparkassandra /spark-shell.sh
 
 # check you can retrieve your Cassandra data using Spark
 scala>import com.datastax.spark.connector._

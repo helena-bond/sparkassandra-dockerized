@@ -12,7 +12,9 @@ sourceSets {
     test.runtimeClasspath += configurations.provided
 }
 
+//noinspection GroovyUnusedAssignment
 sourceCompatibility = 1.8
+//noinspection GroovyUnusedAssignment
 targetCompatibility = 1.8
 
 jar {
@@ -27,6 +29,7 @@ repositories {
 
 dependencies {
     provided 'org.apache.spark:spark-core_2.11:1.6.1'
+    provided 'org.apache.spark:spark-sql_2.11:1.6.1'
     compile 'com.datastax.spark:spark-cassandra-connector-java_2.11:1.6.0-M1'
     compile 'com.databricks:spark-csv_2.11:1.4.0'
 

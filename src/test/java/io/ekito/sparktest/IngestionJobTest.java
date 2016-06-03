@@ -1,6 +1,5 @@
 package io.ekito.sparktest;
 
-
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
@@ -32,13 +31,13 @@ public class IngestionJobTest {
 
     @Before
     public void init() {
-        session.execute("create keyspace test WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}");
-        session.execute("CREATE TABLE test.basket (\"Id\" INT PRIMARY KEY, \"Player\" text, \"Number\" INT)");
+        session.execute("create keyspace if not exists test WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}");
+        session.execute("CREATE TABLE if not exists test.basket (\"Id\" INT PRIMARY KEY, \"Player\" text, \"Number\" INT)");
     }
 
     @After
     public void tearDown() {
-        //session.execute("drop keyspace test");
+        session.execute("drop table test.basket");
     }
 
 

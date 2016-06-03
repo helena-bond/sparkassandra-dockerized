@@ -1,5 +1,15 @@
 #!/bin/bash
 
+docker stop spark_master
+docker stop worker1
+docker stop worker2
+
+docker rm spark_master
+docker rm worker1
+docker rm worker2
+
+
+
 # run a Spark master
 docker run -d -t -P --name spark_master ekito/sparkassandra /start-master.sh
 

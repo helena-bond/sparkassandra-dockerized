@@ -7,24 +7,30 @@ import org.apache.spark.sql.SQLContext;
 
 public class IngestionJob {
 
-    SQLContext sqlContext;
-
-    public IngestionJob() {
+    protected static JavaSparkContext sparkContext() {
         SparkConf conf = new SparkConf()
                 .setAppName("Data Ingestion job")
                 .set("spark.cassandra.connection.host", "127.0.0.1")
                 .setMaster("local");
 
-        JavaSparkContext sc = new JavaSparkContext(conf);
-        sqlContext = new SQLContext(sc);
+        return new JavaSparkContext(conf);
     }
 
-    public DataFrame loadCSVToDataFrame(String filePath) {
-        return sqlContext
+    protected static DataFrame loadCSVToDataFrame(JavaSparkContext sc, String filePath) {
+        return new SQLContext(sc)
                 .read()
                 .format("com.databricks.spark.csv")
                 .option("header", "true")
                 .option("inferSchema", "true")
                 .load(filePath);
+    }
+
+    protected static void storeToCassandra(DataFrame dataFrame, String keySpace, String table) {
+        dataFrame
+                .write()
+                .format("org.apache.spark.sql.cassandra")
+                .option("table", table)
+                .option("keyspace", keySpace)
+                .save();
     }
 }

@@ -7,7 +7,6 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # download and install spark
 RUN curl -s https://www.apache.org/dist/spark/spark-1.6.1/spark-1.6.1-bin-hadoop2.6.tgz | tar -xz -C /usr/local/
 RUN cd /usr/local && ln -s spark-1.6.1-bin-hadoop2.6 spark
-#RUN rm spark-1.6.1-bin-hadoop2.6.tgz
 
 # install cassandra
 RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys 514A2AD631A57A16DD0047EC749D6EEC0353B12C

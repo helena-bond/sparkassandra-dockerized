@@ -1,31 +1,42 @@
 apply plugin: 'java'
 apply plugin: 'idea'
 
+configurations {
+    provided
+    provided.extendsFrom(compile)
+}
+
+sourceSets {
+    main.compileClasspath += configurations.provided
+    test.compileClasspath += configurations.provided
+    test.runtimeClasspath += configurations.provided
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 jar {
     baseName = 'core'
     version = '0.0.1-SNAPSHOT'
 }
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+
 
 repositories {
     mavenCentral()
 }
 
-
 dependencies {
-    compile('org.springframework.boot:spring-boot-starter-web')
-    testCompile('org.springframework.boot:spring-boot-starter-test')
+    provided 'org.apache.spark:spark-core_2.11:1.6.1'
+    compile 'com.datastax.spark:spark-cassandra-connector-java_2.11:1.6.0-M1'
+    compile 'com.databricks:spark-csv_2.11:1.4.0'
 
-    //REST endpoint json serialization
-    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
-    testCompile('com.jayway.jsonpath:json-path:0.8.1')
-    testCompile('com.jayway.jsonpath:json-path-assert:0.8.1')
+    testCompile 'junit:junit:4.12'
+}
 
-    // reactive
-    compile "io.projectreactor:reactor-core:2.5.0.M3"
-    testCompile 'com.jayway.awaitility:awaitility:1.7.0'
+idea {
+    module {
 
-    // mongo
-    compile 'org.mongodb:mongodb-driver-reactivestreams:1.2.0'
+        scopes.PROVIDED.plus += [configurations.provided]
+
+    }
 }

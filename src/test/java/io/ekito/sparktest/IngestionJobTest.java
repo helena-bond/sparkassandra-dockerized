@@ -18,12 +18,14 @@ public class IngestionJobTest {
     public void init() {
         job = new IngestionJob();
         Cluster cluster = Cluster.builder().addContactPoint("127.0.0.1").build();
-        session = cluster.connect("test");
-        session.execute("create table ");
+        session = cluster.connect();
+        session.execute("create keyspace test WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}");
+        session.execute("CREATE TABLE test.basket (     \"Id\"         INT PRIMARY KEY,     \"Player\"           text,     \"Number\"        INT )  ;");
     }
 
     @After
     public void tearDown() {
+        session.execute("drop keyspace test");
     }
 
 

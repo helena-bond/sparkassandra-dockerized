@@ -8,8 +8,8 @@ public class IngestionJob {
 
 
     public IngestionJob(){
-        SparkConf conf = new SparkConf().setAppName( "Data Ingestion job");
-        SparkContext sc = new SparkContext(conf);
+        //SparkConf conf = new SparkConf().setAppName( "Data Ingestion job");
+        //SparkContext sc = new SparkContext(conf);
     }
 
 }

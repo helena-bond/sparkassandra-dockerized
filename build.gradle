@@ -1,0 +1,31 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+jar {
+    baseName = 'core'
+    version = '0.0.1-SNAPSHOT'
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-web')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+
+    //REST endpoint json serialization
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+    testCompile('com.jayway.jsonpath:json-path:0.8.1')
+    testCompile('com.jayway.jsonpath:json-path-assert:0.8.1')
+
+    // reactive
+    compile "io.projectreactor:reactor-core:2.5.0.M3"
+    testCompile 'com.jayway.awaitility:awaitility:1.7.0'
+
+    // mongo
+    compile 'org.mongodb:mongodb-driver-reactivestreams:1.2.0'
+}

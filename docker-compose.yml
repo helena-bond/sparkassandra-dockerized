@@ -33,10 +33,4 @@ services:
     - "9160"
 
     volumes:
-    - /var/lib/cassandra
-    - ./logs:/usr/local/spark/logs
-
-
-#SPARK_WORKER_PORT: 8888
-#SPARK_WORKER_WEBUI_PORT: 8081
-#SPARK_WORKER_OPTS: $SPARK_MASTER_OPTS
+    - "/var/lib/cassandra"

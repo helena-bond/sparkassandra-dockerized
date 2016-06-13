@@ -32,11 +32,42 @@ services:
     - "9042"
     - "9160"
 
-# exposing ports to access spark master
+    # exposing ports to access spark master
     ports:
     - 8080:8080 # web interface
     - 7077:7077 # spark interface to send jobs
     - 6066:6066 # REST interface
 
+
+  spark_worker:
+    build: .
+
+    entrypoint: /cassandra-configurator.sh
+
+    command: /start-worker.sh
+
+    environment:
+      CASSANDRA_CONFIG: /etc/cassandra
+
+    expose:
+    - "4040"
+    - "7000"
+    - "7001"
+    - "7002"
+    - "7003"
+    - "7004"
+    - "7005"
+    - "7006"
+    - "7077"
+    - "7199"
+    - "8080"
+    - "8081"
+    - "8888"
+    - "9042"
+    - "9160"
+
     volumes:
     - "/var/lib/cassandra"
+
+    depends_on:
+    - spark_master

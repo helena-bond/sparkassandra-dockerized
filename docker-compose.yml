@@ -32,5 +32,11 @@ services:
     - "9042"
     - "9160"
 
+# exposing ports to access spark master
+    ports:
+    - 8080:8080 # web interface
+    - 7077:7077 # spark interface to send jobs
+    - 6066:6066 # REST interface
+
     volumes:
     - "/var/lib/cassandra"

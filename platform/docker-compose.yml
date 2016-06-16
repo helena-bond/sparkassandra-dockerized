@@ -1,0 +1,83 @@
+version: '2'
+
+services:
+
+  cassandra_master:
+    image: cassandra:3.5
+
+    environment:
+      - MAX_HEAP_SIZE=1024m
+      - HEAP_NEWSIZE=100m
+    expose:
+    - "7199"
+
+  spark_master:
+    build: .
+    command: ./start-master.sh
+    environment:
+      SPARK_HOME: /usr/local/spark
+      SPARK_MASTER_OPTS: '-Dspark.driver.port=7001 -Dspark.fileserver.port=7002 -Dspark.broadcast.port=7003 -Dspark.replClassServer.port=7004 -Dspark.blockManager.port=7005 -Dspark.executor.port=7006 -Dspark.ui.port=4040 -Dspark.broadcast.factory=org.apache.spark.broadcast.HttpBroadcastFactory'
+      SPARK_MASTER_PORT: 7077
+      SPARK_MASTER_WEBUI_PORT: 8080
+
+    expose:
+    - "4040"
+    - "7000"
+    - "7001"
+    - "7002"
+    - "7003"
+    - "7004"
+    - "7005"
+    - "7006"
+    - "7077"
+    - "7199"
+    - "8080"
+    - "8081"
+    - "8888"
+    - "9042"
+    - "9160"
+    # exposing ports to access spark master
+    ports:
+    - 8080:8080 # web interface
+    - 7077:7077 # spark interface to send jobs
+    - 6066:6066 # REST interface
+
+  spark_worker:
+    build: .
+
+    command: /usr/bin/supervisord
+
+    environment:
+      CASSANDRA_CONFIG: /etc/cassandra
+
+    expose:
+    - "4040"
+    - "7000"
+    - "7001"
+    - "7002"
+    - "7003"
+    - "7004"
+    - "7005"
+    - "7006"
+    - "7077"
+    - "7199"
+    - "8080"
+    - "8081"
+    - "8888"
+    - "9042"
+    - "9160"
+
+    volumes:
+    - "/var/lib/cassandra"
+
+    links:
+    - cassandra_master:seed
+
+    environment:
+    - CASSANDRA_SEEDS=seed
+    - MAX_HEAP_SIZE=1024m
+    - HEAP_NEWSIZE=100m
+
+    depends_on:
+    - spark_master
+    - cassandra_master

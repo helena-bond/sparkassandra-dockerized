@@ -1,0 +1,48 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+
+/*
+configurations {
+    provided
+    provided.extendsFrom(compile)
+}
+
+sourceSets {
+    main.compileClasspath += configurations.provided
+    test.compileClasspath += configurations.provided
+    test.runtimeClasspath += configurations.provided
+}*/
+
+//noinspection GroovyUnusedAssignment
+sourceCompatibility = 1.8
+//noinspection GroovyUnusedAssignment
+targetCompatibility = 1.8
+
+jar {
+    baseName = 'core'
+    version = '0.0.1-SNAPSHOT'
+}
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.apache.spark:spark-core_2.11:1.6.1'
+    compile 'org.apache.spark:spark-sql_2.11:1.6.1'
+    compile 'com.datastax.spark:spark-cassandra-connector-java_2.11:1.6.0-M1'
+    compile 'com.databricks:spark-csv_2.11:1.4.0'
+
+    testCompile 'junit:junit:4.12'
+}
+
+/*
+idea {
+    module {
+
+        scopes.PROVIDED.plus += [configurations.provided]
+
+    }
+}*/

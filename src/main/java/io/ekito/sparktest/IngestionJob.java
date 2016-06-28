@@ -6,11 +6,15 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.apache.spark.sql.functions.concat_ws;
 import static org.apache.spark.sql.functions.col;
 
 public class IngestionJob {
+
+    final static Logger logger = LoggerFactory.getLogger(IngestionJob.class);
 
     public static void main(String[] args) {
 
@@ -21,7 +25,11 @@ public class IngestionJob {
 
         createSchema(sc, keySpace, table);
 
-        DataFrame dataFrame = loadCSVToDataFrame(sc);
+
+        String fileName = args[0];
+        logger.info("CSV file to be loaded is {}", fileName);
+
+        DataFrame dataFrame = loadCSVToDataFrame(sc, fileName);
         dataFrame.printSchema();
         storeToCassandra(dataFrame, keySpace, table);
     }
@@ -35,13 +43,15 @@ public class IngestionJob {
         return new JavaSparkContext(conf);
     }
 
-    static DataFrame loadCSVToDataFrame(JavaSparkContext sc) {
+    static DataFrame loadCSVToDataFrame(JavaSparkContext sc, String fileName) {
+        logger.info("Loading CSV file {} into Dataframe", fileName);
+
         DataFrame dataFrame = new SQLContext(sc)
                 .read()
                 .format("com.databricks.spark.csv")
                 .option("header", "true")
                 .option("inferSchema", "true")
-                .load(sc.getLocalProperty("ingestion.csv.file.path"));
+                .load(fileName);
 
         dataFrame = dataFrame.withColumn("Id", concat_ws("-", col("Year"), col("Month"), col("DayofMonth"), col("DepTime"), col("FlightNum")));
 
@@ -49,6 +59,8 @@ public class IngestionJob {
     }
 
     static void storeToCassandra(DataFrame dataFrame, String keySpace, String table) {
+        logger.info("Storing dataframe into table {}", table);
+
         dataFrame
                 .write()
                 .format("org.apache.spark.sql.cassandra")
@@ -61,7 +73,11 @@ public class IngestionJob {
         String cassandraContactPoint = sc.getConf().get("spark.cassandra.connection.host");
         Cluster cluster = Cluster.builder().addContactPoint(cassandraContactPoint).build();
         Session session = cluster.connect();
+
+        logger.info("Creating keyspace {}", keyspace);
         session.execute("create keyspace IF NOT EXISTS " + keyspace + " WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}");
+
+        logger.info("Creating table {}", table);
         session.execute("CREATE TABLE IF NOT EXISTS " + keyspace + "." + table + " (\n" +
                 "  \"Id\"                text PRIMARY KEY,\n" +
                 "  \"Year\"              INT,\n" +

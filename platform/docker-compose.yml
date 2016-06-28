@@ -52,13 +52,12 @@ services:
     environment:
       CASSANDRA_CONFIG: /etc/cassandra
 
-    entrypoint: /cassandra-configurator.sh
-
     command: /usr/bin/supervisord
 
     volumes:
     - /var/lib/cassandra
     - ../build/libs/:/jobs
+    - ../data:/data
 
     expose:
     - "4040"

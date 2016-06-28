@@ -70,6 +70,9 @@ VOLUME /var/lib/cassandra
 RUN mkdir -p /jobs
 VOLUME /jobs
 
+RUN mkdir -p /data
+VOLUME /data
+
 ### Spark
 # 4040: spark ui
 # 7001: spark driver

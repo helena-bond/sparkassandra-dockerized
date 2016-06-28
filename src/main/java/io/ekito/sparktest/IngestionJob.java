@@ -6,12 +6,27 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
+
 import static org.apache.spark.sql.functions.concat_ws;
 import static org.apache.spark.sql.functions.col;
 
 public class IngestionJob {
 
-    protected static JavaSparkContext sparkContext() {
+    public static void main(String[] args) {
+
+        String keySpace = "poc";
+        String table = "us_flights";
+
+        JavaSparkContext sc = sparkContext();
+
+        createSchema(sc, keySpace, table);
+
+        DataFrame dataFrame = loadCSVToDataFrame(sc, "data/1987.csv");
+        dataFrame.printSchema();
+        storeToCassandra(dataFrame, keySpace, table);
+    }
+
+    static JavaSparkContext sparkContext() {
         SparkConf conf = new SparkConf()
                 .setAppName("Data Ingestion job")
                 .set("spark.cassandra.connection.host", "127.0.0.1")
@@ -20,7 +35,7 @@ public class IngestionJob {
         return new JavaSparkContext(conf);
     }
 
-    protected static DataFrame loadCSVToDataFrame(JavaSparkContext sc, String filePath) {
+    static DataFrame loadCSVToDataFrame(JavaSparkContext sc, String filePath) {
         DataFrame dataFrame = new SQLContext(sc)
                 .read()
                 .format("com.databricks.spark.csv")
@@ -30,10 +45,10 @@ public class IngestionJob {
 
         dataFrame = dataFrame.withColumn("Id", concat_ws("-", col("Year"), col("Month"), col("DayofMonth"), col("DepTime"), col("FlightNum")));
 
-                return dataFrame;
+        return dataFrame;
     }
 
-    protected static void storeToCassandra(DataFrame dataFrame, String keySpace, String table) {
+    static void storeToCassandra(DataFrame dataFrame, String keySpace, String table) {
         dataFrame
                 .write()
                 .format("org.apache.spark.sql.cassandra")
@@ -42,7 +57,7 @@ public class IngestionJob {
                 .save();
     }
 
-    protected static void createSchema(JavaSparkContext sc, String keyspace, String table) {
+    static void createSchema(JavaSparkContext sc, String keyspace, String table) {
         String cassandraContactPoint = sc.getConf().get("spark.cassandra.connection.host");
         Cluster cluster = Cluster.builder().addContactPoint(cassandraContactPoint).build();
         Session session = cluster.connect();
@@ -50,9 +65,9 @@ public class IngestionJob {
         session.execute("CREATE TABLE IF NOT EXISTS " + keyspace + "." + table + " (\n" +
                 "  \"Id\"                text PRIMARY KEY,\n" +
                 "  \"Year\"              INT,\n" +
-                "  \"Month\"            INT,\n" +
+                "  \"Month\"             INT,\n" +
                 "  \"DayOfWeek\"         INT,\n" +
-                "  \"DayofMonth\"         INT,\n" +
+                "  \"DayofMonth\"        INT,\n" +
                 "  \"DepTime\"           text,\n" +
                 "  \"CRSDepTime\"        INT,\n" +
                 "  \"ArrTime\"           text,\n" +
@@ -79,19 +94,5 @@ public class IngestionJob {
                 "  \"SecurityDelay\"     text,\n" +
                 "  \"LateAircraftDelay\" text\n" +
                 ")");
-    }
-
-    public static void main(String[] args) {
-
-        String keySpace = "poc";
-        String table = "us_flights";
-
-        JavaSparkContext sc = sparkContext();
-
-        createSchema(sc, keySpace, table);
-
-        DataFrame dataFrame = loadCSVToDataFrame(sc, "data/1987.csv");
-        dataFrame.printSchema();
-        storeToCassandra(dataFrame, keySpace, table);
     }
 }

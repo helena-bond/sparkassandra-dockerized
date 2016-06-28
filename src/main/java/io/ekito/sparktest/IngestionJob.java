@@ -21,7 +21,7 @@ public class IngestionJob {
 
         createSchema(sc, keySpace, table);
 
-        DataFrame dataFrame = loadCSVToDataFrame(sc, "data/1987.csv");
+        DataFrame dataFrame = loadCSVToDataFrame(sc);
         dataFrame.printSchema();
         storeToCassandra(dataFrame, keySpace, table);
     }
@@ -35,13 +35,13 @@ public class IngestionJob {
         return new JavaSparkContext(conf);
     }
 
-    static DataFrame loadCSVToDataFrame(JavaSparkContext sc, String filePath) {
+    static DataFrame loadCSVToDataFrame(JavaSparkContext sc) {
         DataFrame dataFrame = new SQLContext(sc)
                 .read()
                 .format("com.databricks.spark.csv")
                 .option("header", "true")
                 .option("inferSchema", "true")
-                .load(filePath);
+                .load(sc.getLocalProperty("ingestion.csv.file.path"));
 
         dataFrame = dataFrame.withColumn("Id", concat_ws("-", col("Year"), col("Month"), col("DayofMonth"), col("DepTime"), col("FlightNum")));
 

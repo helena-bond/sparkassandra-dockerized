@@ -20,6 +20,9 @@ services:
       SPARK_MASTER_PORT: 7077
       SPARK_MASTER_WEBUI_PORT: 8080
 
+    volumes:
+    -  ../build/libs/:/jobs
+
     expose:
     - "4040"
     - "7000"
@@ -45,10 +48,17 @@ services:
   spark_worker:
     build: .
 
-    command: /usr/bin/supervisord
 
     environment:
       CASSANDRA_CONFIG: /etc/cassandra
+
+    entrypoint: /cassandra-configurator.sh
+
+    command: /usr/bin/supervisord
+
+    volumes:
+    - /var/lib/cassandra
+    - ../build/libs/:/jobs
 
     expose:
     - "4040"
@@ -67,8 +77,6 @@ services:
     - "9042"
     - "9160"
 
-    volumes:
-    - "/var/lib/cassandra"
 
     links:
     - cassandra_master:seed

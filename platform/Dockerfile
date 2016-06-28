@@ -12,6 +12,7 @@ RUN cd /usr/local && ln -s spark-1.6.1-bin-hadoop2.6 spark
 COPY scripts/start-master.sh /start-master.sh
 COPY scripts/start-worker.sh /start-worker.sh
 COPY scripts/spark-shell.sh /spark-shell.sh
+COPY scripts/spark-submitJob.sh /spark-submitJob.sh
 COPY scripts/spark-cassandra-connector-assembly-1.6.0-M2.jar /spark-cassandra-connector-assembly-1.6.0-M2.jar
 COPY scripts/spark-defaults.conf /spark-defaults.conf
 
@@ -65,6 +66,9 @@ RUN mkdir -p /var/lib/cassandra "$CASSANDRA_CONFIG" \
 	&& chown -R cassandra:cassandra /var/lib/cassandra "$CASSANDRA_CONFIG" \
 	&& chmod 777 /var/lib/cassandra "$CASSANDRA_CONFIG"
 VOLUME /var/lib/cassandra
+
+RUN mkdir -p /jobs
+VOLUME /jobs
 
 ### Spark
 # 4040: spark ui

@@ -37,8 +37,7 @@ public class IngestionJob {
     static JavaSparkContext sparkContext() {
         SparkConf conf = new SparkConf()
                 .setAppName("Data Ingestion job")
-                .set("spark.cassandra.connection.host", "127.0.0.1")
-                .setMaster("local");
+                .set("spark.cassandra.connection.host", "127.0.0.1");
 
         return new JavaSparkContext(conf);
     }

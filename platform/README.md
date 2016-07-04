@@ -18,18 +18,22 @@ Let's Go!
 * https://docs.docker.com/installation/
 * https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
 
-## Run your own Spark 1.6 + Cassandra 3.5 cluster using Docker!
+## How to build
 
 ```
-# run a Spark master
-docker run -d -t -P --name spark_master ekito/sparkassandra /start-master.sh
+# Go to platform directory
+cd platform 
 
-# run a Cassandra + Spark worker node
-docker run -it --name worker1 --link spark_master:spark_master -d ekito/sparkassandra
+# Launch docker compose for build & start the docker image
+docker-compose up -d
 
-# (optional) run some other nodes if you wish
-docker run -it --name worker2 --link spark_master:spark_master --link worker1:cassandra -d ekito/sparkassandra
+# Scale the cluster - add spark_worker
+docker-compose scale spark_worker= <Number_of_instances>
+
+# If you want to know which nodes are instantiated 
+docker-compose ps
 ```
+
 
 Here you have a Cassandra + Spark cluster running without installing anything but Docker. #cool
 

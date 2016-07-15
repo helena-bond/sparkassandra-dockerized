@@ -33,5 +33,6 @@ task fatJar(type: Jar) {
         exclude "META-INF/*.DSA"
         exclude "META-INF/*.RSA"
     }
+    destinationDir = file('platform/jobs')
     with jar
 }

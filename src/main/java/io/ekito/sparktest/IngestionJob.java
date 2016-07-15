@@ -22,16 +22,20 @@ public class IngestionJob {
         String table = "us_flights";
 
         JavaSparkContext sc = sparkContext();
+        try {
 
-        createSchema(sc, keySpace, table);
+            createSchema(sc, keySpace, table);
 
 
-        String fileName = args[0];
-        logger.info("CSV file to be loaded is {}", fileName);
+            String fileName = args[0];
+            logger.info("CSV file to be loaded is {}", fileName);
 
-        DataFrame dataFrame = loadCSVToDataFrame(sc, fileName);
-        dataFrame.printSchema();
-        storeToCassandra(dataFrame, keySpace, table);
+            DataFrame dataFrame = loadCSVToDataFrame(sc, fileName);
+            dataFrame.printSchema();
+            storeToCassandra(dataFrame, keySpace, table);
+        } finally {
+            sc.stop();
+        }
     }
 
     static JavaSparkContext sparkContext() {

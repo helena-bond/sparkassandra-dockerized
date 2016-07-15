@@ -5,3 +5,4 @@ docker run -it \
 --link platform_cassandra_master_1:cassandra \
 --rm cassandra:3.5 \
 cqlsh cassandra
+

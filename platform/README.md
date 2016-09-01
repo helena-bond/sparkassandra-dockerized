@@ -43,7 +43,7 @@ To test your Cassandra cluster, you can run a cqlsh console to insert some data:
 
 ```
 # run a Cassandra cqlsh console
-docker run -it --link worker1:cassandra --rm ekito/sparkassandra cqlsh cassandra
+./cql.sh
 
 # create some data and retrieve them:
 cqlsh>CREATE KEYSPACE test WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1 };
@@ -70,7 +70,7 @@ To test your Spark cluster, you can run a shell to read/write data from/to Cassa
 
 ```
 # run a Spark shell
-docker run -i -t -P --link spark_master:spark_master --link worker1:cassandra ekito/sparkassandra /spark-shell.sh
+docker run -i -t -P --net platform_default platform_spark_master ./spark-shell.sh
 
 # check you can retrieve your Cassandra data using Spark
 scala>import com.datastax.spark.connector._

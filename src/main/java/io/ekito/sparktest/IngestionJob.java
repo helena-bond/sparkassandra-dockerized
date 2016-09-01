@@ -21,11 +21,9 @@ public class IngestionJob {
         String keySpace = "poc";
         String table = "us_flights";
 
-        JavaSparkContext sc = sparkContext();
+        JavaSparkContext sc = new JavaSparkContext(sparkConf());
         try {
-
             createSchema(sc, keySpace, table);
-
 
             String fileName = args[0];
             logger.info("CSV file to be loaded is {}", fileName);
@@ -38,12 +36,12 @@ public class IngestionJob {
         }
     }
 
-    static JavaSparkContext sparkContext() {
+    static SparkConf sparkConf() {
         SparkConf conf = new SparkConf()
-                .setAppName("Data Ingestion job")
-                .set("spark.cassandra.connection.host", "127.0.0.1");
+                    .setAppName("Data Ingestion job")
+                    .set("spark.cassandra.connection.host", "127.0.0.1");
 
-        return new JavaSparkContext(conf);
+        return conf;
     }
 
     static DataFrame loadCSVToDataFrame(JavaSparkContext sc, String fileName) {

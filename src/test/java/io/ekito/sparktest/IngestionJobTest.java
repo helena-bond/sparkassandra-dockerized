@@ -3,6 +3,7 @@ package io.ekito.sparktest;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
+import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.DataFrame;
 import org.junit.After;
@@ -22,38 +23,44 @@ public class IngestionJobTest {
 
     private static JavaSparkContext sparkContext;
 
+
+    private static String KEYSPACE = "poc_test";
+    private static String TABLE = "us_flights";
+
+
     @BeforeClass
     public static void setup() {
         Cluster cluster = Cluster.builder().addContactPoint("127.0.0.1").build();
         session = cluster.connect();
-        sparkContext = IngestionJob.sparkContext();
+        SparkConf sparkConf = IngestionJob.sparkConf();
+        sparkConf.setMaster("local[8]");
+        sparkContext = new JavaSparkContext(sparkConf);
     }
 
     @Before
     public void init() {
-        session.execute("create keyspace if not exists test WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1}");
-        session.execute("CREATE TABLE if not exists test.basket (\"Id\" INT PRIMARY KEY, \"Player\" text, \"Number\" INT)");
+       IngestionJob.createSchema(sparkContext, KEYSPACE, TABLE);
     }
 
     @After
     public void tearDown() {
-        session.execute("drop table test.basket");
+        session.execute("drop table " + KEYSPACE + "." + TABLE);
     }
 
 
     @Test
     public void shouldLoadCSVToDataFrame() {
-        DataFrame dataFrame = loadCSVToDataFrame(sparkContext, "src/test/ressources/basket.csv");
-        assertEquals(3L, dataFrame.count());
+        DataFrame dataFrame = loadCSVToDataFrame(sparkContext, "src/test/ressources/USFlightsTest.csv");
+        assertEquals(9L, dataFrame.count());
     }
 
     @Test
     public void shouldStoreDataFrameInDatabase() {
-        DataFrame dataFrame = loadCSVToDataFrame(sparkContext, "src/test/ressources/basket.csv");
+        DataFrame dataFrame = loadCSVToDataFrame(sparkContext, "src/test/ressources/USFlightsTest.csv");
 
-        storeToCassandra(dataFrame, "test", "basket");
+        storeToCassandra(dataFrame, KEYSPACE, TABLE);
 
-        ResultSet result = session.execute("select * from test.basket");
-        assertEquals(3L, stream(result.spliterator(), false).count());
+        ResultSet result = session.execute("select * from " + KEYSPACE + "." + TABLE);
+        assertEquals(9L, stream(result.spliterator(), false).count());
     }
 }

@@ -5,14 +5,18 @@ RUN apt-get update && apt-get install -y supervisor curl net-tools host && mkdir
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # download and install spark
-RUN curl -s https://www.apache.org/dist/spark/spark-1.6.1/spark-1.6.1-bin-hadoop2.6.tgz | tar -xz -C /usr/local/
-RUN cd /usr/local && ln -s spark-1.6.1-bin-hadoop2.6 spark
+RUN curl -s https://www.apache.org/dist/spark/spark-1.6.2/spark-1.6.2-bin-hadoop2.6.tgz | tar -xz -C /usr/local/
+RUN cd /usr/local && ln -s spark-1.6.2-bin-hadoop2.6 spark
+
+#RUN curl -s https://www.apache.org/dist/spark/spark-2.0.1/spark-2.0.1-bin-hadoop2.7.tgz | tar -xz -C /usr/local/
+#RUN cd /usr/local && ln -s spark-2.0.1-bin-hadoop2.7 spark
 
 # copy some scripts to run spark
 COPY scripts/start-master.sh /start-master.sh
 COPY scripts/start-worker.sh /start-worker.sh
 COPY scripts/spark-shell.sh /spark-shell.sh
 COPY scripts/spark-submitJob.sh /spark-submitJob.sh
+#COPY scripts/spark-cassandra-connector-embedded_2.10-2.0.0-M3.jar /spark-cassandra-connector-embedded_2.10-2.0.0-M3.jar
 COPY scripts/spark-cassandra-connector-assembly-1.6.0-M2.jar /spark-cassandra-connector-assembly-1.6.0-M2.jar
 COPY scripts/spark-defaults.conf /spark-defaults.conf
 

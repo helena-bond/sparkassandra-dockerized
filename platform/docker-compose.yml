@@ -12,7 +12,7 @@ services:
     - "7199"
 
   spark_master:
-    build: .
+    image: bpoller/sparkassandra
     command: ./start-master.sh
     environment:
       SPARK_HOME: /usr/local/spark
@@ -46,7 +46,7 @@ services:
     - 6066:6066 # REST interface
 
   spark_worker:
-    build: .
+    image: bpoller/sparkassandra
 
     environment:
       CASSANDRA_CONFIG: /etc/cassandra

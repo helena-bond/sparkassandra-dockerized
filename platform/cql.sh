@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
 docker run -it \
---net platform_default \
---link platform_cassandra_master_1:cassandra \
+--net platform_back-tier \
 --rm cassandra:3.5 \
-cqlsh cassandra
-
+cqlsh cassandra_master

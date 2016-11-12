@@ -9,9 +9,7 @@ services:
       - MAX_HEAP_SIZE=1024m
       - HEAP_NEWSIZE=100m
     expose:
-      - "7199"
-    networks:
-      - back-tier
+    - "7199"
 
   spark_master:
     image: bpoller/sparkassandra
@@ -46,8 +44,6 @@ services:
     - 8080:8080 # web interface
     - 7077:7077 # spark interface to send jobs
     - 6066:6066 # REST interface
-    networks:
-     - back-tier
 
   spark_worker:
     image: bpoller/sparkassandra
@@ -79,6 +75,7 @@ services:
     - "9042"
     - "9160"
 
+
     links:
     - cassandra_master:seed
 
@@ -90,10 +87,3 @@ services:
     depends_on:
     - spark_master
     - cassandra_master
-
-    networks:
-    - back-tier
-
-networks:
-  back-tier:
-    driver: overlay

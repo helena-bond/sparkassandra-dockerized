@@ -4,10 +4,10 @@ services:
 
   cassandra_master:
     image: cassandra:3.5
-
     environment:
       - MAX_HEAP_SIZE=1024m
       - HEAP_NEWSIZE=100m
+      - "reschedule:on-node-failure"
     expose:
       - "7199"
     networks:
@@ -17,14 +17,14 @@ services:
     image: bpoller/sparkassandra
     command: ./start-master.sh
     environment:
-      SPARK_HOME: /usr/local/spark
-      SPARK_MASTER_OPTS: '-Dspark.driver.port=7001 -Dspark.fileserver.port=7002 -Dspark.broadcast.port=7003 -Dspark.replClassServer.port=7004 -Dspark.blockManager.port=7005 -Dspark.executor.port=7006 -Dspark.ui.port=4040 -Dspark.broadcast.factory=org.apache.spark.broadcast.HttpBroadcastFactory'
-      SPARK_MASTER_PORT: 7077
-      SPARK_MASTER_WEBUI_PORT: 8080
-
+    - "SPARK_HOME:/usr/local/spark"
+    - "SPARK_MASTER_OPTS:'-Dspark.driver.port=7001 -Dspark.fileserver.port=7002 -Dspark.broadcast.port=7003 -Dspark.replClassServer.port=7004 -Dspark.blockManager.port=7005 -Dspark.executor.port=7006 -Dspark.ui.port=4040 -Dspark.broadcast.factory=org.apache.spark.broadcast.HttpBroadcastFactory'"
+    - "SPARK_MASTER_PORT:7077"
+    - "SPARK_MASTER_WEBUI_PORT:8080"
+    - "constraint:exposes==http8080"
+    - "reschedule:on-node-failure"
     volumes:
     - ./jobs:/jobs
-
     expose:
     - "4040"
     - "7000"
@@ -51,17 +51,17 @@ services:
 
   spark_worker:
     image: bpoller/sparkassandra
-
     environment:
-      CASSANDRA_CONFIG: /etc/cassandra
-
+    - "CASSANDRA_CONFIG:/etc/cassandra"
+    - "CASSANDRA_SEEDS:cassandra_master"
+    - "MAX_HEAP_SIZE:1024m"
+    - "HEAP_NEWSIZE:100m"
+    - "reschedule:on-node-failure"
     command: /usr/bin/supervisord
-
     volumes:
     - /var/lib/cassandra
     - ./jobs:/jobs
     - ./data:/data
-
     expose:
     - "4040"
     - "7000"
@@ -78,19 +78,9 @@ services:
     - "8888"
     - "9042"
     - "9160"
-
-    links:
-    - cassandra_master:seed
-
-    environment:
-    - CASSANDRA_SEEDS=seed
-    - MAX_HEAP_SIZE=1024m
-    - HEAP_NEWSIZE=100m
-
     depends_on:
     - spark_master
     - cassandra_master
-
     networks:
     - back-tier
 

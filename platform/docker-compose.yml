@@ -1,5 +1,9 @@
 version: '2'
 
+networks:
+  back-tier:
+    driver: overlay
+
 services:
 
   cassandra_master:
@@ -14,7 +18,7 @@ services:
       - back-tier
 
   spark_master:
-    image: bpoller/sparkassandra
+    build: .
     command: ./start-master.sh
     environment:
     - "SPARK_HOME:/usr/local/spark"
@@ -50,7 +54,7 @@ services:
      - back-tier
 
   spark_worker:
-    image: bpoller/sparkassandra
+    build: .
     environment:
     - "CASSANDRA_CONFIG:/etc/cassandra"
     - "CASSANDRA_SEEDS:cassandra_master"
@@ -84,6 +88,4 @@ services:
     networks:
     - back-tier
 
-networks:
-  back-tier:
-    driver: overlay
+

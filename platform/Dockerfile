@@ -5,8 +5,8 @@ RUN apt-get update && apt-get install -y supervisor curl net-tools host && mkdir
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # download and install spark
-RUN curl -s https://www.apache.org/dist/spark/spark-1.6.1/spark-1.6.1-bin-hadoop2.6.tgz | tar -xz -C /usr/local/
-RUN cd /usr/local && ln -s spark-1.6.1-bin-hadoop2.6 spark
+RUN curl -s https://www.apache.org/dist/spark/spark-1.6.2/spark-1.6.2-bin-hadoop2.6.tgz | tar -xz -C /usr/local/
+RUN cd /usr/local && ln -s spark-1.6.2-bin-hadoop2.6 spark
 
 # copy some scripts to run spark
 COPY scripts/start-master.sh /start-master.sh

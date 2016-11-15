@@ -70,7 +70,9 @@ To test your Spark cluster, you can run a shell to read/write data from/to Cassa
 
 ```
 # run a Spark shell
-docker run -it --net platform_back-tier --rm bpoller/sparkassandra ./spark-shell.sh
+docker run -it --net platform_back-tier --rm bpoller/sparkassandra ./spark-shell
+ docker run -it -P --net platform_back-tier --rm platform_spark_master ./spark-shell.sh
+
 
 # check you can retrieve your Cassandra data using Spark
 scala>import com.datastax.spark.connector._

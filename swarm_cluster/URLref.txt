@@ -1,0 +1,7 @@
+https://dzone.com/articles/docker-swarm-cluster-using-consul
+https://github.com/lalyos/swarm-demo/blob/master/README.md
+https://docs.docker.com/swarm/discovery/
+https://docs.docker.com/swarm/install-manual/
+https://crate.io/a/deploying-crate-with-docker-machine-swarm/
+
+https://console.cloud.google.com/compute/instances?project=sparkassandrito

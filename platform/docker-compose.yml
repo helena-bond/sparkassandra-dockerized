@@ -12,7 +12,7 @@ services:
     - "7199"
 
   spark_master:
-    image: bpoller/sparkassandra
+    build: .
     command: ./start-master.sh
     environment:
       SPARK_HOME: /usr/local/spark
@@ -21,7 +21,7 @@ services:
       SPARK_MASTER_WEBUI_PORT: 8080
 
     volumes:
-    - ./jobs:/jobs
+    -  ../build/libs/:/jobs
 
     expose:
     - "4040"
@@ -46,7 +46,7 @@ services:
     - 6066:6066 # REST interface
 
   spark_worker:
-    image: bpoller/sparkassandra
+    build: .
 
     environment:
       CASSANDRA_CONFIG: /etc/cassandra
@@ -55,8 +55,8 @@ services:
 
     volumes:
     - /var/lib/cassandra
-    - ./jobs:/jobs
-    - ./data:/data
+    - ../build/libs/:/jobs
+    - ../data:/data
 
     expose:
     - "4040"

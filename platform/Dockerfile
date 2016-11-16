@@ -5,8 +5,10 @@ RUN apt-get update && apt-get install -y supervisor curl net-tools host && mkdir
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # download and install spark
-RUN curl -s https://www.apache.org/dist/spark/spark-1.6.1/spark-1.6.1-bin-hadoop2.6.tgz | tar -xz -C /usr/local/
-RUN cd /usr/local && ln -s spark-1.6.1-bin-hadoop2.6 spark
+#RUN curl -s https://www.apache.org/dist/spark/spark-1.6.2/spark-1.6.2-bin-hadoop2.6.tgz | tar -xz -C /usr/local/
+COPY scripts/spark-1.6.2-bin-hadoop2.6.zip /spark-1.6.2-bin-hadoop2.6.zip
+RUN jar -xf spark-1.6.2-bin-hadoop2.6.zip /usr/local/
+RUN cd /usr/local && ln -s spark-1.6.2-bin-hadoop2.6 spark
 
 # copy some scripts to run spark
 COPY scripts/start-master.sh /start-master.sh
@@ -16,6 +18,78 @@ COPY scripts/spark-submitJob.sh /spark-submitJob.sh
 COPY scripts/spark-cassandra-connector-assembly-1.6.0-M2.jar /spark-cassandra-connector-assembly-1.6.0-M2.jar
 COPY scripts/spark-defaults.conf /spark-defaults.conf
 
+# Install Python & jupyter
+
+# Install necessary packages
+#RUN apt-get -y update && \
+#    apt-get install -y --no-install-recommends python-qt4 && \
+#    apt-get clean
+
+# Create jovyan user with UID=1000 and in the 'users' group
+ENV CONDA_DIR /opt/conda
+ENV NB_UID 1000
+ENV NB_USER sparkassandra
+ENV HOME /home/$NB_USER
+ENV PATH $CONDA_DIR/bin:$PATH
+ENV SHELL /bin/bash
+ENV HOME /home/$NB_USER
+ENV LC_ALL en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US.UTF-8
+
+RUN useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
+    mkdir -p $CONDA_DIR && \
+    chown $NB_USER $CONDA_DIR
+
+
+#Use unprivileged user provided by base image
+USER $NB_USER
+
+# Setup jovyan home directory
+RUN mkdir /home/$NB_USER/work && \
+    mkdir /home/$NB_USER/.jupyter && \
+    echo "cacert=/etc/ssl/certs/ca-certificates.crt" > /home/$NB_USER/.curlrc
+
+# Install conda as jovyan
+RUN cd /tmp && \
+    mkdir -p $CONDA_DIR && \
+    wget --quiet https://repo.continuum.io/miniconda/Miniconda3-4.1.11-Linux-x86_64.sh && \
+    echo "efd6a9362fc6b4085f599a881d20e57de628da8c1a898c08ec82874f3bad41bf *Miniconda3-4.1.11-Linux-x86_64.sh" | sha256sum -c - && \
+    /bin/bash Miniconda3-4.1.11-Linux-x86_64.sh -f -b -p $CONDA_DIR && \
+    rm Miniconda3-4.1.11-Linux-x86_64.sh && \
+    $CONDA_DIR/bin/conda install --quiet --yes conda==4.1.11 && \
+    $CONDA_DIR/bin/conda config --system --add channels conda-forge && \
+    $CONDA_DIR/bin/conda config --system --set auto_update_conda false && \
+    conda clean -tipsy
+
+# Install Python 2 packages and kernel spec
+RUN conda create --yes -p $CONDA_DIR/envs/python2 python=2.7 \
+    'ipython=3.2*' \
+    'pandas' \
+    'matplotlib' \
+    'scipy' \
+    'seaborn' \
+    'scikit-learn' \
+    && conda clean -yt
+
+RUN $CONDA_DIR/envs/python2/bin/python \
+    $CONDA_DIR/envs/python2/bin/ipython \
+    kernelspec install-self --user
+
+#Prepare environment
+ENV PYSPARK_PYTHON=$CONDA_DIR/envs/python2/bin/python2.7
+ENV PYSPARK_DRIVER_PYTHON=ipython
+ENV PYSPARK_DRIVER_PYTHON_OPTS="notebook --no-browser"
+
+# Switch back to root so that supervisord runs under that user
+USER root
+
+#COPY and ADD don't add as the current user https://github.com/docker/docker/issues/7390, https://github.com/docker/docker/pull/13600
+RUN chown sparkassandra:sparkassandra $HOME/work -R
+
+COPY scripts/notebook.conf /etc/supervisor/conf.d/
+#COPY scripts/pyspark-shell.sh /pyspark-shell.sh
+
 # configure spark
 ENV SPARK_HOME /usr/local/spark
 ENV SPARK_MASTER_OPTS="-Dspark.driver.port=7001 -Dspark.fileserver.port=7002 -Dspark.broadcast.port=7003 -Dspark.replClassServer.port=7004 -Dspark.blockManager.port=7005 -Dspark.executor.port=7006 -Dspark.ui.port=4040 -Dspark.broadcast.factory=org.apache.spark.broadcast.HttpBroadcastFactory"
@@ -24,6 +98,7 @@ ENV SPARK_MASTER_PORT 7077
 ENV SPARK_MASTER_WEBUI_PORT 8080
 ENV SPARK_WORKER_PORT 8888
 ENV SPARK_WORKER_WEBUI_PORT 8081
+ENV PYTHONPATH $SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.9-src.zip
 
 # install cassandra
 
@@ -90,4 +165,6 @@ VOLUME /data
 # 7199: C* JMX
 # 9042: C* CQL
 # 9160: C* thrift service
-EXPOSE 4040 7000 7001 7002 7003 7004 7005 7006 7077 7199 8080 8081 8888 9042 9160
+### Jupyter
+# 8888: Jupyter
+EXPOSE 4040 7000 7001 7002 7003 7004 7005 7006 7077 7199 8080 8081 8888 9042 9160 8888

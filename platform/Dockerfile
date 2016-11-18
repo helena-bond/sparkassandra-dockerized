@@ -70,6 +70,7 @@ VOLUME /var/lib/cassandra
 RUN mkdir -p /jobs
 VOLUME /jobs
 
+
 RUN mkdir -p /data
 VOLUME /data
 

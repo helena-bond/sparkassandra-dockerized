@@ -1,4 +1,4 @@
-CREATE TABLE test.us_flights (
+CREATE TABLE sparkassandra.us_flights (
   Id                INT PRIMARY KEY,
   Year              INT,
   Month             INT,

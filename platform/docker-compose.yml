@@ -61,7 +61,6 @@ services:
      - spark_master
      networks:
       - spark_cluster_nw
-
   spark_workerC:
     build: .
     command: ./start-worker.sh
@@ -73,7 +72,6 @@ services:
     - spark_master
     networks:
      - spark_cluster_nw
-
   jupyter:
     build: ./pyspark-notebook
     ports:

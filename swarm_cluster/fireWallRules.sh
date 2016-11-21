@@ -1,6 +1,5 @@
 #!/bin/bash
 
-#
 # recovers the default project id
 PROJECT_ID="sparkassandrito"
 

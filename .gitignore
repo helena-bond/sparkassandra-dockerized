@@ -11,8 +11,8 @@ jobs
 
 swarm_cluster/sparkassandrito-7cedd904e9fc.json
 
-notebook/configuration.yml
+platform/notebook/configuration.yml
 
-notebook/.ipynb_checkpoints/*
+platform/notebook/.ipynb_checkpoints/*
 
 

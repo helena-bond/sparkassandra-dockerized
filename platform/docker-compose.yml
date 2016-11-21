@@ -33,8 +33,8 @@ services:
       - 8080:8080 # web interface
       - 7077:7077 # spark interface to send jobs
       - 6066:6066 # REST interface
-      environment:
-      - "constraint:exposes==http8080"
+#      environment:
+#      - "constraint:sparkport==http8080"
       networks:
        - spark_cluster_nw
 
@@ -45,5 +45,14 @@ services:
     - ./jobs:/jobs
     depends_on:
     - spark_master
+    networks:
+     - spark_cluster_nw
+
+  jupyter:
+    image: jupyter/pyspark-notebook
+    ports:
+    - 8890:8888 #web console
+#    environment:
+#    - "constraint:jupyterport==http8890"
     networks:
      - spark_cluster_nw

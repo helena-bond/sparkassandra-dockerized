@@ -12,14 +12,16 @@ PROJECT_ID="sparkassandrito"
 # sets up google api credentials location
 export GOOGLE_APPLICATION_CREDENTIALS="/home/francky/Share/DOCKER_SHARED/sparkassandrito-7cedd904e9fc.json"
 
-docker-machine rm $1-consul-1 -y -f
+docker-machine rm $1-consul-1 -y -f &
 
 for MGR_ID in {1..4}
 do
-	docker-machine rm $1-node-$MGR_ID -y -f
+	docker-machine rm $1-node-$MGR_ID -y -f &
 done
 
-docker-machine rm $1-master-1 -y -f
+docker-machine rm $1-master-1 -y -f &
+
+wait
 
 docker-machine ls
 

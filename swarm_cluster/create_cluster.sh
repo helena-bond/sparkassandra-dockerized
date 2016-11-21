@@ -16,14 +16,14 @@ gce-consul-1
 
 
 #redirect docker-ci on consul machine to deploy consul image
-eval $(docker-machine env $1-consul-1)
+eval $(docker-machine env gce-consul-1)
 
 #deploy consul image
 docker run -d -p 8500:8500 \
 --restart always --name=consul \
 progrium/consul -server -bootstrap
 
-CONSUL_IP=$(docker-machine ip $1-consul-1)
+CONSUL_IP=$(docker-machine ip gce-consul-1)
 
 echo Consul Server up and running. IP: $CONSUL_IP
 

@@ -5,7 +5,7 @@
 PROJECT_ID="sparkassandrito"
 
 # sets up google api credentials location
-export GOOGLE_APPLICATION_CREDENTIALS="/home/francky/Share/DOCKER_SHARED/sparkassandrito-7cedd904e9fc.json"
+export GOOGLE_APPLICATION_CREDENTIALS="$(pwd)sparkassandrito-7cedd904e9fc.json"
 
 docker-machine rm gce-consul-1 -y -f &
 

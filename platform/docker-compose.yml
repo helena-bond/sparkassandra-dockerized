@@ -44,7 +44,7 @@ services:
     volumes:
     - ./jobs:/jobs
     ports:
-    - 8888:8888
+    - 8081:8081
     depends_on:
     - spark_master
     networks:

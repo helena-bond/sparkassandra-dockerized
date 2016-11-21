@@ -9,7 +9,7 @@ export GOOGLE_APPLICATION_CREDENTIALS="sparkassandrito-7cedd904e9fc.json"
 
 # SET FIREWALL RULES
 # auth
-gcloud auth activate-service-account --key-file ~/Share/DOCKER_SHARED/sparkassandrito-7cedd904e9fc.json --project sparkassandrito
+gcloud auth activate-service-account --key-file sparkassandrito-7cedd904e9fc.json --project sparkassandrito
 
 #Allow ssh, Swarm is able to talk to its instances
 gcloud compute firewall-rules create default-ssh --allow tcp:22,icmp --source-ranges 0.0.0.0/0 --project=$PROJECT_ID

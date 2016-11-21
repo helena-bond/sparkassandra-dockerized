@@ -57,7 +57,7 @@ echo Consul Server up and running. IP: $CONSUL_IP
   --swarm-discovery consul://$CONSUL_IP:8500 \
   --engine-opt cluster-store=consul://$CONSUL_IP:8500 \
   --engine-opt="cluster-advertise=eth0:2376" \
-  $1-master-1
+  $1-master-1 &
 
 #create swarm node
 # expose http8080 for spark master capabilities
@@ -73,7 +73,7 @@ do
   --engine-opt="cluster-advertise=eth0:2376" \
   --engine-label exposes=http8080 \
   --google-tags http8080 \
-  $1-node-$MGR_ID
+  $1-node-$MGR_ID &
 done
 #list machines
 docker-machine ls

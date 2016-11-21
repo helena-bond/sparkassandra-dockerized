@@ -49,7 +49,7 @@ services:
      - spark_cluster_nw
 
   jupyter:
-    image: jupyter/scipy-notebook
+    build: ./pyspark-notebook
     ports:
     - 8890:8888 #web console
     environment:

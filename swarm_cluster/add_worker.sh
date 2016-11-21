@@ -12,7 +12,7 @@ export GOOGLE_APPLICATION_CREDENTIALS="$(pwd)/sparkassandrito-7cedd904e9fc.json"
 eval $(docker-machine env gce-consul-1)
 
 
-
+CONSUL_IP=$(docker-machine ip gce-consul-1)
 
 #create swarm node
 # expose http8080 for spark master capabilities

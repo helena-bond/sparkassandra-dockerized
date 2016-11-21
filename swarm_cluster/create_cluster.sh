@@ -1,6 +1,10 @@
 #!/bin/bash
 
 #Creates machines in default project previously initialized in gcloud
+if [ "$#" -ne 1 ]; then
+   echo "Illegal number of parameters"
+   exit 1
+fi
 
 # recovers the default project id
 PROJECT_ID="sparkassandrito"
@@ -25,17 +29,18 @@ docker-machine create \
 --driver google \
 --google-zone europe-west1-b \
 --google-project $PROJECT_ID \
-gce-consul-1
+$1-consul-1
+
 
 #redirect docker-ci on consul machine to deploy consul image
-eval $(docker-machine env gce-consul-1)
+eval $(docker-machine env $1-consul-1)
 
 #deploy consul image
 docker run -d -p 8500:8500 \
 --restart always --name=consul \
 progrium/consul -server -bootstrap
 
-CONSUL_IP=$(docker-machine ip gce-consul-1)
+CONSUL_IP=$(docker-machine ip $1-consul-1)
 
 echo Consul Server up and running. IP: $CONSUL_IP
 
@@ -45,17 +50,18 @@ echo Consul Server up and running. IP: $CONSUL_IP
  docker-machine create \
   --driver google \
   --google-zone europe-west1-b \
+  --google-disk-type "pd-standard" \
   --google-project $PROJECT_ID \
   --swarm \
   --swarm-master \
   --swarm-discovery consul://$CONSUL_IP:8500 \
   --engine-opt cluster-store=consul://$CONSUL_IP:8500 \
   --engine-opt="cluster-advertise=eth0:2376" \
-  gce-master-1
+  $1-master-1
 
 #create swarm node
 # expose http8080 for spark master capabilities
-for MGR_ID in {1..2}
+for MGR_ID in {1..3}
 do
   docker-machine create \
   --driver google \
@@ -67,13 +73,13 @@ do
   --engine-opt="cluster-advertise=eth0:2376" \
   --engine-label exposes=http8080 \
   --google-tags http8080 \
-  gce-mgr-$MGR_ID
+  $1-node-$MGR_ID
 done
 #list machines
 docker-machine ls
 
 #check swarm node ok
-eval $(docker-machine env --swarm gce-master-1)
+eval $(docker-machine env --swarm $1-master-1)
 
 docker info
 

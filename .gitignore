@@ -8,3 +8,11 @@ build
 data
 
 jobs
+
+swarm_cluster/sparkassandrito-7cedd904e9fc.json
+
+platform/notebook/configuration.yml
+
+platform/notebook/.ipynb_checkpoints/*
+
+

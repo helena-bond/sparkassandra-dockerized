@@ -4,7 +4,7 @@
 PROJECT_ID="sparkassandrito"
 
 # sets up google api credentials location
-export GOOGLE_APPLICATION_CREDENTIALS="sparkassandrito-7cedd904e9fc.json"
+export GOOGLE_APPLICATION_CREDENTIALS="$(pwd)/sparkassandrito-7cedd904e9fc.json"
 
 #CREATE KEY-VALUE STORE FOR DISCOVERY
 #create consul kv store

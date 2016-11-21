@@ -1,0 +1,10 @@
+amazon :
+    # Access Key Id (Bert's account)
+    access_key_id: ""
+
+    # Secret Access Key (Bert's account)
+    secret_access_key: ""
+    
+googlemap :
+    # Key Id generated on "My Project" account (gcp@ekito.fr)
+    key_id : ""

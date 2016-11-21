@@ -1,98 +1,49 @@
 version: '2'
 
 networks:
-  back-tier:
-   driver: overlay
+  spark_cluster_nw:
+    driver: overlay
 
 services:
-
   cassandra_master:
-    image: cassandra:3.5
-
+    image: cassandra:3.9
     environment:
-      - MAX_HEAP_SIZE=1024m
-      - HEAP_NEWSIZE=100m
-    expose:
-    - "7199"
-    
+    - MAX_HEAP_SIZE=512m
+    - HEAP_NEWSIZE=100m
     networks:
-     - back-tier
+     - spark_cluster_nw
 
-  spark_master:
-    image: bpoller/sparkassandra
-    command: ./start-master.sh
-    environment:
-      SPARK_HOME: /usr/local/spark
-      SPARK_MASTER_OPTS: '-Dspark.driver.port=7001 -Dspark.fileserver.port=7002 -Dspark.broadcast.port=7003 -Dspark.replClassServer.port=7004 -Dspark.blockManager.port=7005 -Dspark.executor.port=7006 -Dspark.ui.port=4040 -Dspark.broadcast.factory=org.apache.spark.broadcast.HttpBroadcastFactory'
-      SPARK_MASTER_PORT: 7077
-      SPARK_MASTER_WEBUI_PORT: 8080
-
-    volumes:
-    - ./jobs:/jobs
-
-    expose:
-    - "4040"
-    - "7000"
-    - "7001"
-    - "7002"
-    - "7003"
-    - "7004"
-    - "7005"
-    - "7006"
-    - "7077"
-    - "7199"
-    - "8080"
-    - "8081"
-    - "8888"
-    - "9042"
-    - "9160"
-    # exposing ports to access spark master
-    ports:
-    - 8080:8080 # web interface
-    - 7077:7077 # spark interface to send jobs
-    - 6066:6066 # REST interface
-
-    networks:
-     - back-tier
-
-  spark_worker:
-    image: bpoller/sparkassandra
-
-    environment:
-      CASSANDRA_CONFIG: /etc/cassandra
-
-    command: /usr/bin/supervisord
-
-    volumes:
-    - /var/lib/cassandra
-    - ./jobs:/jobs
-    - ./data:/data
-
-    expose:
-    - "4040"
-    - "7000"
-    - "7001"
-    - "7002"
-    - "7003"
-    - "7004"
-    - "7005"
-    - "7006"
-    - "7077"
-    - "7199"
-    - "8080"
-    - "8081"
-    - "8888"
-    - "9042"
-    - "9160"
-
+  cassandra_node:
+    image: cassandra:3.9
     environment:
     - CASSANDRA_SEEDS=cassandra_master
     - MAX_HEAP_SIZE=1024m
     - HEAP_NEWSIZE=100m
+    depends_on:
+    - cassandra_master
+    networks:
+     - spark_cluster_nw
 
+  spark_master:
+      build: .
+      command: ./start-master.sh
+      volumes:
+      - ./jobs:/jobs
+      ports:
+      - 8080:8080 # web interface
+      - 7077:7077 # spark interface to send jobs
+      - 6066:6066 # REST interface
+      environment:
+      - "constraint:exposes==http8080"
+      networks:
+       - spark_cluster_nw
+
+  spark_worker:
+    build: .
+    command: ./start-worker.sh
+    volumes:
+    - ./jobs:/jobs
     depends_on:
     - spark_master
-    - cassandra_master
-
     networks:
-     - back-tier
+     - spark_cluster_nw

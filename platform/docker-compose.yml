@@ -43,6 +43,8 @@ services:
     command: ./start-worker.sh
     volumes:
     - ./jobs:/jobs
+    ports:
+    - 8888:8888
     depends_on:
     - spark_master
     networks:

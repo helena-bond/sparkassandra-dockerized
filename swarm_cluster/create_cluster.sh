@@ -10,7 +10,7 @@ fi
 PROJECT_ID="sparkassandrito"
 
 # sets up google api credentials location
-export GOOGLE_APPLICATION_CREDENTIALS="/home/francky/Share/DOCKER_SHARED/sparkassandrito-7cedd904e9fc.json"
+export GOOGLE_APPLICATION_CREDENTIALS="sparkassandrito-7cedd904e9fc.json"
 
 # SET FIREWALL RULES
 # auth

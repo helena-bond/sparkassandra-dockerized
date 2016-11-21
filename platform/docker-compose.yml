@@ -38,16 +38,37 @@ services:
       networks:
        - spark_cluster_nw
 
-  spark_worker:
+  spark_workerA:
     build: .
     command: ./start-worker.sh
     volumes:
     - ./jobs:/jobs
-    #ports:
-    #- 8081:8081
-    expose:
-    - 8081
-    - 8888
+    ports:
+    - 8081:8081
+    depends_on:
+    - spark_master
+    networks:
+     - spark_cluster_nw
+
+  spark_workerB:
+     build: .
+     command: ./start-worker.sh
+     volumes:
+     - ./jobs:/jobs
+     ports:
+     - 8081:8081
+     depends_on:
+     - spark_master
+     networks:
+      - spark_cluster_nw
+
+  spark_workerC:
+    build: .
+    command: ./start-worker.sh
+    volumes:
+    - ./jobs:/jobs
+    ports:
+    - 8081:8081
     depends_on:
     - spark_master
     networks:

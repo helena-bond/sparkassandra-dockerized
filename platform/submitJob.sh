@@ -32,7 +32,7 @@ echo CLASS     = "${CLASS}"
 echo ARGUMENTS = "${ARGUMENTS}"
 
 docker run \
--it --net platform_default \
+-it --net platform_spark_cluster_nw \
 -v jobs:/jobs \
 platform_spark_master \
 ./spark-submitJob.sh --job $JOB --class $CLASS --args $ARGUMENTS

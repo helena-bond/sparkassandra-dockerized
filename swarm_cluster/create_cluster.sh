@@ -5,9 +5,6 @@ PROJECT_ID="sparkassandrito"
 MASTER_COUNT=1
 NODE_COUNT=3
 
-# sets up google api credentials location
-export GOOGLE_APPLICATION_CREDENTIALS="$(pwd)/sparkassandrito-7cedd904e9fc.json"
-
 #CREATE KEY-VALUE STORE FOR DISCOVERY
 #create consul kv store
 docker-machine create \

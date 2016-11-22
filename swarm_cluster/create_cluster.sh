@@ -28,7 +28,8 @@ echo Consul Server up and running. IP: $CONSUL_IP
 #create swarm cluster relying on CONSUL discovery
 
 #create swarm master
-for MASTER_ID in {1..$MASTER_COUNT}
+
+for ((ID = 1; ID <= $MASTER_COUNT; ID++));
 do
  docker-machine create \
   --driver google \
@@ -40,12 +41,12 @@ do
   --swarm-discovery consul://$CONSUL_IP:8500 \
   --engine-opt cluster-store=consul://$CONSUL_IP:8500 \
   --engine-opt="cluster-advertise=eth0:2376" \
-  gce-master-$MASTER_ID &
+  gce-master-$ID &
 done
 
 #create swarm node
 # expose http8080 for spark master capabilities
-for NODE_ID in {1..$NODE_COUNT}
+for ((ID = 1; ID <= $NODE_COUNT; ID++));
 do
   docker-machine create \
   --driver google \
@@ -58,20 +59,20 @@ do
   --engine-label sparkport=http8080 \
   --engine-label jupyterport=http8890 \
   --google-tags http8080,http8890 \
-  gce-node-$NODE_ID &
+  gce-node-$ID &
 done
 
 wait
 
 # Add nodes to instance group for reverse proxy and load balancing
-for MASTER_ID in {1..$MASTER_COUNT}
+for ((ID = 1; ID <= $MASTER_COUNT; ID++));
 do
- gcloud compute instance-groups unmanaged add-instances sparkcluster --instances gce-master-$MASTER_ID --zone europe-west1-b
+ gcloud compute instance-groups unmanaged add-instances sparkcluster --instances gce-master-$ID --zone europe-west1-b
 done
 
-for NODE_ID in {1..$NODE_COUNT}
+for ((ID = 1; ID <= $NODE_COUNT; ID++));
 do
- gcloud compute instance-groups unmanaged add-instances sparkcluster --instances gce-master-$NODE_ID --zone europe-west1-b
+ gcloud compute instance-groups unmanaged add-instances sparkcluster --instances gce-master-$ID --zone europe-west1-b
 done
 
 #Some checks

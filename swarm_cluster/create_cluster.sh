@@ -86,6 +86,3 @@ docker-machine ls
 eval $(docker-machine env --swarm gce-master-1)
 
 docker info
-
-#TO TRY
-#docker run swarm list consul://$(docker-machine ip consul-machine):8500

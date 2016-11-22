@@ -61,17 +61,7 @@ services:
      - spark_master
      networks:
       - spark_cluster_nw
-  spark_worker_c:
-    build: .
-    command: ./start-worker.sh
-    volumes:
-    - ./jobs:/jobs
-    ports:
-    - 8081:8081
-    depends_on:
-    - spark_master
-    networks:
-     - spark_cluster_nw
+
   jupyter:
     build: ./pyspark-notebook
     ports:

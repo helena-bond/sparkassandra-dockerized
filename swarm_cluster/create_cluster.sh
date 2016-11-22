@@ -2,9 +2,8 @@
 
 # recovers the default project id
 PROJECT_ID="sparkassandrito"
-
-# sets up google api credentials location
-export GOOGLE_APPLICATION_CREDENTIALS="$(pwd)/sparkassandrito-7cedd904e9fc.json"
+MASTER_COUNT=1
+NODE_COUNT=3
 
 #CREATE KEY-VALUE STORE FOR DISCOVERY
 #create consul kv store
@@ -13,7 +12,6 @@ docker-machine create \
 --google-zone europe-west1-b \
 --google-project $PROJECT_ID \
 gce-consul-1
-
 
 #redirect docker-ci on consul machine to deploy consul image
 eval $(docker-machine env gce-consul-1)
@@ -30,6 +28,9 @@ echo Consul Server up and running. IP: $CONSUL_IP
 #create swarm cluster relying on CONSUL discovery
 
 #create swarm master
+
+for ((ID = 1; ID <= $MASTER_COUNT; ID++));
+do
  docker-machine create \
   --driver google \
   --google-zone europe-west1-b \
@@ -40,13 +41,12 @@ echo Consul Server up and running. IP: $CONSUL_IP
   --swarm-discovery consul://$CONSUL_IP:8500 \
   --engine-opt cluster-store=consul://$CONSUL_IP:8500 \
   --engine-opt="cluster-advertise=eth0:2376" \
-  gce-master-1 &
-
-
+  gce-master-$ID &
+done
 
 #create swarm node
 # expose http8080 for spark master capabilities
-for MGR_ID in {1..3}
+for ((ID = 1; ID <= $NODE_COUNT; ID++));
 do
   docker-machine create \
   --driver google \
@@ -59,11 +59,23 @@ do
   --engine-label sparkport=http8080 \
   --engine-label jupyterport=http8890 \
   --google-tags http8080,http8890 \
-  gce-node-$MGR_ID &
+  gce-node-$ID &
 done
 
-
 wait
+
+# Add nodes to instance group for reverse proxy and load balancing
+for ((ID = 1; ID <= $MASTER_COUNT; ID++));
+do
+ gcloud compute instance-groups unmanaged add-instances sparkcluster --instances gce-master-$ID --zone europe-west1-b
+done
+
+for ((ID = 1; ID <= $NODE_COUNT; ID++));
+do
+ gcloud compute instance-groups unmanaged add-instances sparkcluster --instances gce-node-$ID --zone europe-west1-b
+done
+
+#Some checks
 
 #list machines
 docker-machine ls
@@ -72,9 +84,3 @@ docker-machine ls
 eval $(docker-machine env --swarm gce-master-1)
 
 docker info
-
-#TO TRY
-#docker run swarm list consul://$(docker-machine ip consul-machine):8500
-
-
-

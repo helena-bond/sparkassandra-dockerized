@@ -38,7 +38,7 @@ services:
       networks:
        - spark_cluster_nw
 
-  spark_workerA:
+  spark_worker_a:
     build: .
     command: ./start-worker.sh
     volumes:
@@ -50,7 +50,7 @@ services:
     networks:
      - spark_cluster_nw
 
-  spark_workerB:
+  spark_worker_b:
      build: .
      command: ./start-worker.sh
      volumes:
@@ -61,7 +61,7 @@ services:
      - spark_master
      networks:
       - spark_cluster_nw
-  spark_workerC:
+  spark_worker_c:
     build: .
     command: ./start-worker.sh
     volumes:

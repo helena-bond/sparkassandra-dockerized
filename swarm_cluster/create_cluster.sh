@@ -3,7 +3,7 @@
 # recovers the default project id
 PROJECT_ID="sparkassandrito"
 MASTER_COUNT=1
-NODE_COUNT=3
+NODE_COUNT=4
 
 #CREATE KEY-VALUE STORE FOR DISCOVERY
 #create consul kv store
@@ -34,7 +34,7 @@ do
  docker-machine create \
   --driver google \
   --google-zone europe-west1-b \
-  --google-disk-type "pd-standard" \
+  --google-machine-type n1-standard-4 \
   --google-project $PROJECT_ID \
   --swarm \
   --swarm-master \
@@ -51,6 +51,7 @@ do
   docker-machine create \
   --driver google \
   --google-zone europe-west1-b \
+  --google-machine-type n1-standard-4 \
   --google-project $PROJECT_ID \
   --swarm \
   --swarm-discovery consul://$CONSUL_IP:8500 \

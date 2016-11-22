@@ -8,7 +8,7 @@ services:
   cassandra_master:
     image: cassandra:3.9
     environment:
-    - MAX_HEAP_SIZE=512m
+    - MAX_HEAP_SIZE=2048m
     - HEAP_NEWSIZE=100m
     networks:
      - spark_cluster_nw
@@ -17,7 +17,7 @@ services:
     image: cassandra:3.9
     environment:
     - CASSANDRA_SEEDS=cassandra_master
-    - MAX_HEAP_SIZE=1024m
+    - MAX_HEAP_SIZE=2048m
     - HEAP_NEWSIZE=100m
     depends_on:
     - cassandra_master
@@ -55,8 +55,6 @@ services:
      command: ./start-worker.sh
      volumes:
      - ./jobs:/jobs
-     ports:
-     - 8081:8081
      depends_on:
      - spark_master
      networks:

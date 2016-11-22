@@ -40,7 +40,7 @@ do
   --swarm-discovery consul://$CONSUL_IP:8500 \
   --engine-opt cluster-store=consul://$CONSUL_IP:8500 \
   --engine-opt="cluster-advertise=eth0:2376" \
-  gce-master-1 &
+  gce-master-$MASTER_ID &
 done
 
 #create swarm node

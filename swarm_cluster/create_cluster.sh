@@ -72,7 +72,7 @@ done
 
 for ((ID = 1; ID <= $NODE_COUNT; ID++));
 do
- gcloud compute instance-groups unmanaged add-instances sparkcluster --instances gce-master-$ID --zone europe-west1-b
+ gcloud compute instance-groups unmanaged add-instances sparkcluster --instances gce-node-$ID --zone europe-west1-b
 done
 
 #Some checks

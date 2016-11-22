@@ -16,7 +16,7 @@ CONSUL_IP=$(docker-machine ip gce-consul-1)
 
 #create swarm node
 # expose http8080 for spark master capabilities
-for MGR_ID in {4..5}
+for MGR_ID in {4..6}
 do
   docker-machine create \
   --driver google \

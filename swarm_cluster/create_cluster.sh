@@ -3,7 +3,7 @@
 # recovers the default project id
 PROJECT_ID="sparkassandrito"
 MASTER_COUNT=1
-NODE_COUNT=3
+NODE_COUNT=4
 
 #CREATE KEY-VALUE STORE FOR DISCOVERY
 #create consul kv store

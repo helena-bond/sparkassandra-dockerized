@@ -18,7 +18,7 @@ spec:
             - /run.sh
           env:
             - name: MAX_HEAP_SIZE
-              value: 512M
+              value: 1500M
             - name: HEAP_NEWSIZE
               value: 100M
             - name: CASSANDRA_SEED_PROVIDER

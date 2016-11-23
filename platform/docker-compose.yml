@@ -69,3 +69,9 @@ services:
     - "constraint:jupyterport==http8890"
     networks:
      - spark_cluster_nw
+
+  spark_ui_proxy:
+    build: ./sparkProxy
+    ports:
+    - 9999:9999
+

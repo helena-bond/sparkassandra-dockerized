@@ -1,0 +1,21 @@
+kind: ReplicationController
+apiVersion: v1
+metadata:
+  name: pyspark-controller
+spec:
+  replicas: 1
+  selector:
+    component: pyspark
+  template:
+    metadata:
+      labels:
+        component: pyspark
+    spec:
+      containers:
+        - name: pyspark
+          image: gcr.io/swarm-test-147711/pyspark
+          ports:
+            - containerPort: 8888
+          resources:
+            requests:
+              cpu: 100m

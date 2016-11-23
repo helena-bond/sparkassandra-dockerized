@@ -71,7 +71,7 @@ services:
      - spark_cluster_nw
 
   spark_ui_proxy:
-    images: aseigneurin/spark-ui-proxy
+    image: aseigneurin/spark-ui-proxy
     ports:
     - 9999:9999
 

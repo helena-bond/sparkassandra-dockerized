@@ -62,7 +62,7 @@ services:
       - spark_cluster_nw
 
   jupyter:
-    build: ./pyspark-notebook
+    build: ./../kubernetes/pyspark-notebook
     ports:
     - 8890:8888 #web console
     environment:

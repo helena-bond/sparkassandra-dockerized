@@ -33,6 +33,7 @@ services:
       - 8080:8080 # web interface
       - 7077:7077 # spark interface to send jobs
       - 6066:6066 # REST interface
+      - 4040:4040 # web UI
       environment:
       - "constraint:sparkport==http8080"
       networks:

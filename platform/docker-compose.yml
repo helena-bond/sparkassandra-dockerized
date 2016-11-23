@@ -71,7 +71,7 @@ services:
      - spark_cluster_nw
 
   spark_ui_proxy:
-    image: ./sparkProxy
+    build: ./sparkProxy
     ports:
     - 9999:9999
 

@@ -1,4 +1,4 @@
-create keyspace IF NOT EXISTS sparkassandra WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+create keyspace IF NOT EXISTS sparkassandra WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 2};
 CREATE TABLE sparkassandra.us_flights (
   Id                text PRIMARY KEY,
   Year              text,

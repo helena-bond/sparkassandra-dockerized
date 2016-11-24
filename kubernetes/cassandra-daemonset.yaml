@@ -47,7 +47,7 @@ spec:
               #  name: thrift
           resources:
             requests:
-              cpu: 0.7
+              cpu: 4
           volumeMounts:
             - mountPath: /cassandra_data
               name: data
